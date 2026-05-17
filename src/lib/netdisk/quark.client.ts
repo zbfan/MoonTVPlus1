@@ -43,6 +43,7 @@ export interface QuarkShareVideoListResult {
 }
 
 export type QuarkPlayMode = 'direct_first' | 'transcode_first';
+export type QuarkRangeWindow = { start: number; end: number; total: number };
 
 const VIDEO_EXTENSIONS = [
   '.mp4',
@@ -808,4 +809,43 @@ export async function getQuarkPlayUrls(
   }
 
   return deduped;
+}
+
+function parseContentRangeHeader(contentRange: string | null): QuarkRangeWindow | null {
+  if (!contentRange) return null;
+  const match = contentRange.match(/^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i);
+  if (!match) return null;
+  const start = Number(match[1]);
+  const end = Number(match[2]);
+  const total = Number(match[3]);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(total)) return null;
+  return { start, end, total };
+}
+
+export async function probeQuarkPlayRange(
+  url: string,
+  headers: Record<string, string>,
+  range?: string
+): Promise<{ response: Response; window: QuarkRangeWindow | null } | null> {
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), 300000);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        ...headers,
+        ...(range ? { Range: range } : {}),
+      },
+      cache: 'no-store',
+      signal: abortController.signal,
+    });
+
+    if (!response.ok || !response.body) {
+      return null;
+    }
+
+    const window = parseContentRangeHeader(response.headers.get('content-range'));
+    return { response, window };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

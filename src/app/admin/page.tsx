@@ -3937,6 +3937,7 @@ const NetDiskConfigComponent = ({
   const [cookie, setCookie] = useState('');
   const [savePath, setSavePath] = useState('/');
   const [quarkPlayMode, setQuarkPlayMode] = useState<'direct_first' | 'transcode_first'>('transcode_first');
+  const [quarkMultiThreadPlayback, setQuarkMultiThreadPlayback] = useState(false);
   const [mobileEnabled, setMobileEnabled] = useState(false);
   const [mobileAuthorization, setMobileAuthorization] = useState('');
   const [baiduEnabled, setBaiduEnabled] = useState(false);
@@ -3961,6 +3962,7 @@ const NetDiskConfigComponent = ({
     setCookie(quark?.Cookie || '');
     setSavePath(quark?.SavePath || '/');
     setQuarkPlayMode(quark?.PlayMode === 'direct_first' ? 'direct_first' : 'transcode_first');
+    setQuarkMultiThreadPlayback(Boolean(quark?.MultiThreadPlayback));
     setMobileEnabled(mobile?.Enabled || false);
     setMobileAuthorization(mobile?.Authorization || '');
     setBaiduEnabled(config?.NetDiskConfig?.Baidu?.Enabled || false);
@@ -3991,6 +3993,7 @@ const NetDiskConfigComponent = ({
             Cookie: cookie,
             SavePath: savePath,
             PlayMode: quarkPlayMode,
+            MultiThreadPlayback: quarkMultiThreadPlayback,
           },
           Mobile: {
             Enabled: mobileEnabled,
@@ -4325,6 +4328,27 @@ const NetDiskConfigComponent = ({
             <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
               直链优先会优先使用原画下载地址；转码优先会优先使用夸克转码播放地址。
             </p>
+          </div>
+
+          <div className='flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700'>
+            <div>
+              <h3 className='text-sm font-medium text-gray-900 dark:text-gray-100'>
+                多线程播放
+              </h3>
+              <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
+                开启后，代理会把播放器请求的 Range 拆分并发拉取。
+              </p>
+            </div>
+            <label className='relative inline-flex items-center cursor-pointer'>
+              <input
+                type='checkbox'
+                checked={quarkMultiThreadPlayback}
+                onChange={(e) => setQuarkMultiThreadPlayback(e.target.checked)}
+                disabled={!enabled}
+                className='sr-only peer'
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-disabled:opacity-50 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
           </div>
 
           <div className='flex gap-3'>

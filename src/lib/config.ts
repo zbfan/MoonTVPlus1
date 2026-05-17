@@ -725,6 +725,7 @@ export function configSelfCheck(adminConfig: AdminConfig): AdminConfig {
         Cookie: '',
         SavePath: '/',
         PlayMode: 'transcode_first',
+        MultiThreadPlayback: false,
       },
       Mobile: {
         Enabled: false,
@@ -763,10 +764,14 @@ export function configSelfCheck(adminConfig: AdminConfig): AdminConfig {
       Cookie: '',
       SavePath: '/',
       PlayMode: 'transcode_first',
+      MultiThreadPlayback: false,
     };
   }
   if (!adminConfig.NetDiskConfig.Quark.PlayMode) {
     adminConfig.NetDiskConfig.Quark.PlayMode = 'transcode_first';
+  }
+  if (adminConfig.NetDiskConfig.Quark.MultiThreadPlayback === undefined) {
+    adminConfig.NetDiskConfig.Quark.MultiThreadPlayback = false;
   }
 
   if (!adminConfig.NetDiskConfig.Mobile) {

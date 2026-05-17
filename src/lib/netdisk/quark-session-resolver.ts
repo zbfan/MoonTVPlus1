@@ -41,5 +41,6 @@ export async function resolveQuarkSession(id: string) {
     cookie: quarkConfig.Cookie,
     savePath: quarkConfig.SavePath || '/',
     playMode,
+    multiThreadPlayback: Boolean(quarkConfig.MultiThreadPlayback),
   };
 }

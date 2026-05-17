@@ -153,6 +153,7 @@ export interface AdminConfig {
       Cookie: string;
       SavePath: string;
       PlayMode?: 'direct_first' | 'transcode_first';
+      MultiThreadPlayback?: boolean;
     };
     Mobile?: {
       Enabled: boolean;
